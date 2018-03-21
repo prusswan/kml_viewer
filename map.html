@@ -2,7 +2,11 @@
     <head>
         <title>OneMap2 XYZ (Default)</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
-        <script src="https://cdn.onemap.sg/leaflet/onemap-leaflet.js"></script>
+        <!-- onemap's leaflet is 0.7.7 -->
+        <!-- script src="https://cdn.onemap.sg/leaflet/onemap-leaflet.js"></script -->
+        <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+        <script src="https://unpkg.com/togeojson@0.16.0"></script>
+        <script src="https://unpkg.com/leaflet-filelayer@1.2.0"></script>
     </head>
     <body>
     <h1>Singapore Map</h1>
@@ -21,7 +25,7 @@
     map.setMaxBounds([[1.56073, 104.1147], [1.16, 103.502]]);
 
     basemap.addTo(map);
-
+    
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
@@ -35,5 +39,35 @@
         .setContent('You are here!')
         .openOn(map);					
     }
+    
+    var control = L.Control.fileLayerLoad({
+        // Allows you to use a customized version of L.geoJson.
+        // For example if you are using the Proj4Leaflet leaflet plugin,
+        // you can pass L.Proj.geoJson and load the files into the
+        // L.Proj.GeoJson instead of the L.geoJson.
+        layer: L.geoJson,
+        // See http://leafletjs.com/reference.html#geojson-options
+        layerOptions: {style: {color:'red'}},
+        // Add to map after loading (default: true) ?
+        addToMap: true,
+        // File size limit in kb (default: 1024) ?
+        fileSizeLimit: 1024,
+        // Restrict accepted file formats (default: .geojson, .json, .kml, and .gpx) ?
+        formats: [
+            '.geojson',
+            '.kml'
+        ]
+    }).addTo(map);
+
+    control.loader.on('data:loaded', function (event) {
+        // event.layer gives you access to the layers you just uploaded!
+
+        // Add to map layer switcher
+        //layerswitcher.addOverlay(event.layer, event.filename);
+    }); 
+    control.loader.on('data:error', function (error) {  
+        // Do something usefull with the error!
+        console.error(error);
+    });      
 </script>
 </html>
