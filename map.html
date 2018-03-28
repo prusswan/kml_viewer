@@ -56,18 +56,18 @@
     
     var defaultStyle = {
         color: 'red',
-        opacity: 1.0,
-        fillOpacity: 1.0,
-        weight: 3,
+        opacity: 0.5,
+        fillOpacity: 0.5,
+        weight: 6,
         clickable: false
     };
  
     var highlightStyle = {
-        color: '#2262CC', 
-        weight: 3,
+        color: 'green', 
+        weight: 6,
         opacity: 0.6,
         fillOpacity: 0.65,
-        fillColor: '#2262CC'
+        fillColor: 'green'
     }; 
     
     function zoomToFeature(event) {
@@ -170,8 +170,12 @@
                 },
                 mouseout:resetHighlight
             });
-            layer.bindPopup('<h1>'+"placeholder"+'</h1><p>name: '+layer._latlngs.length+'</p>');
+            layer.bindPopup('<h1>layer: '+ layer._leaflet_id +'</h1><p>length: '+layer._latlngs.length+'</p>');
         }
+    })
+    
+    map.on('overlayadd', function(event) {
+        activeLayer = event.layer;
     })
  
     </script>
