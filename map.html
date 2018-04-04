@@ -19,12 +19,14 @@
     <script src="https://unpkg.com/leaflet-filelayer@1.2.0"></script>
     <script src="https://unpkg.com/leaflet.active-layers@0.3.0/dist/leaflet.active-layers.min.js"></script>
     <script src="https://unpkg.com/leaflet-groupedlayercontrol@0.6.0/dist/leaflet.groupedlayercontrol.min.js"></script>
+    <script src="https://rawgit.com/ennosol/Leaflet.Polyline.SnakeAnim/master/L.Polyline.SnakeAnim.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script>
     var activeLayer;
     
     var center = L.bounds([1.56073, 104.11475], [1.16, 103.502]).getCenter();
     var map = L.map('mapdiv').setView([center.x, center.y], 12);
+    var snakeLine;
 
     var basemap = L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
         detectRetina: true,
@@ -76,6 +78,11 @@
     function highlightFeature(event, feature, layer) {
         //console.log("highlight", event, layer._leaflet_id, layer._renderer._layers);
         
+        if (layer._latlngs) {
+            snakeLine = L.polyline(layer._latlngs, {snakingSpeed: 200});
+            snakeLine.addTo(map).snakeIn();
+        }
+
         // Change the style to the highlighted version
         layer.setStyle(highlightStyle);
         
@@ -84,6 +91,7 @@
     
     function resetHighlight(event) {
         //console.log("reset");
+        map.removeLayer(snakeLine);
         
         // Start by reverting the style back
         event.target.setStyle(defaultStyle); 
