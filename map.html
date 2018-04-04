@@ -72,7 +72,7 @@
     }
     
     function highlightFeature(event, feature, layer) {
-        //console.log("highlight", event, feature, layer);
+        //console.log("highlight", event, layer._leaflet_id, layer._renderer._layers);
         
         // Change the style to the highlighted version
         layer.setStyle(highlightStyle);
@@ -89,6 +89,17 @@
         // And then destroying the popup
         $("#popup").remove();       
     }
+    
+    function findLayerSequence(layer) {
+        var layer_id = layer._leaflet_id;
+        var parent_id = layer._renderer._leaflet_id;
+        var layers = map._layers[parent_id]._layers;
+        
+        var keys = Object.keys(layers);
+        var index = keys.indexOf(layer_id.toString());
+        return index+1 + "/" + keys.length;
+    }
+    
     // http://palewi.re/posts/2012/03/26/leaflet-recipe-hover-events-features-and-polygons/
     var onEachFeature = function(feature, layer) {
         console.log("eachfeature", feature, layer);
@@ -209,7 +220,13 @@
                 },
                 mouseout:resetHighlight
             });
-            layer.bindPopup('<h1>layer: '+ layer._leaflet_id +'</h1><p>length: '+layer._latlngs.length+'</p>');
+            
+            // set dynamic content to the popup
+            // https://github.com/Leaflet/Leaflet/issues/947
+            layer.bindPopup(function() {
+                var result = '<h1>Layer ' + findLayerSequence(layer) + '</h1><p>id: '+ layer._leaflet_id +'</p><p>length: '+layer._latlngs.length+'</p>';
+                return result;
+            });
         }
         
         if (layer.name) {
