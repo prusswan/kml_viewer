@@ -126,7 +126,7 @@
         // See http://leafletjs.com/reference.html#geojson-options
         
         layerOptions: {    
-            style: defaultStyle,        
+            style: defaultStyle,    
             pointToLayer: function (data, latlng) {
                return L.circleMarker(latlng, {style: defaultStyle});
             },
@@ -147,7 +147,9 @@
 
     control.loader.on('data:loaded', function (event) {
         // event.layer gives you access to the layers you just uploaded!
-        console.log("layer loaded:", event.layer);
+        console.log("layer loaded:", event.layer, event.filename);
+        // event.layer.options.name = event.filename;
+        event.layer.name = event.filename;
         activeLayer = event.layer;
 
         // Add to map layer switcher
@@ -161,7 +163,7 @@
     var layerswitcher = L.control.layers(baseMaps,overlayMaps).addTo(map);
     map.on('layeradd', function(event, layername) {
         var layer = event.layer;
-        console.log("layeradd", event);
+        //console.log("layeradd", layer.name, event);
         
         if (layer._latlngs) {
             layer.on({
@@ -172,10 +174,18 @@
             });
             layer.bindPopup('<h1>layer: '+ layer._leaflet_id +'</h1><p>length: '+layer._latlngs.length+'</p>');
         }
+        
+        if (layer.name) {
+            console.log("layeradd", event, layer.name);
+        }
     })
     
     map.on('overlayadd', function(event) {
         activeLayer = event.layer;
+    })
+    
+    map.on('overlayremove', function(event) {
+        console.log('layer removed', event.name);
     })
  
     </script>
