@@ -17,6 +17,8 @@
     <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/togeojson@0.16.0"></script>
     <script src="https://unpkg.com/leaflet-filelayer@1.2.0"></script>
+    <script src="https://unpkg.com/leaflet.active-layers@0.3.0/dist/leaflet.active-layers.min.js"></script>
+    <script src="https://unpkg.com/leaflet-groupedlayercontrol@0.6.0/dist/leaflet.groupedlayercontrol.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script>
     var activeLayer;
@@ -34,12 +36,7 @@
 
     basemap.addTo(map);
 
-    var baseMaps = {
-      "Base Layer": basemap
-    };  
-    var overlayMaps = {
-    };
-    
+
     function getLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(showPosition);
@@ -75,7 +72,7 @@
     }
     
     function highlightFeature(event, feature, layer) {
-        console.log("highlight", event, feature, layer);
+        //console.log("highlight", event, feature, layer);
         
         // Change the style to the highlighted version
         layer.setStyle(highlightStyle);
@@ -152,15 +149,55 @@
         event.layer.name = event.filename;
         activeLayer = event.layer;
 
+        // hide existing overlays
+        layerswitcher.removeOverlays();
+        
         // Add to map layer switcher
-        layerswitcher.addOverlay(event.layer, event.filename);
+        layerswitcher.addOverlay(event.layer, event.filename, 'Routes');
 
     }); 
     control.loader.on('data:error', function (error) {  
         // Do something usefull with the error!
         console.error(error);
-    });      
-    var layerswitcher = L.control.layers(baseMaps,overlayMaps).addTo(map);
+    });  
+    L.Control.GroupedLayers.include({
+        removeOverlays: function () {
+            for (var i in this._layers) {
+                if (this._layers[i].overlay) {
+                    if (this._map.hasLayer(this._layers[i].layer)) {
+                        this._map.removeLayer(this._layers[i].layer);
+                    }
+                }
+            }
+        },
+        
+        removeOtherOverlays: function(name) {
+            for (var i in this._layers) {
+                if (this._layers[i].overlay) {
+                    if (!this._layers[i].layer.name) continue;
+                    if (this._layers[i].layer.name == name) continue;
+                    
+                    console.log("removing..", this._layers[i].layer.name);
+                    
+                    if (this._map.hasLayer(this._layers[i].layer)) {
+                        this._map.removeLayer(this._layers[i].layer);
+                    }
+                }
+            }
+        }        
+    });
+    
+    var baseMaps = {
+      "Base Layer": basemap
+    };  
+    var overlayMaps = {
+      "Routes": []
+    };
+    var layerOptions = {
+        exclusiveGroups: ['Routes']
+    }
+    
+    var layerswitcher = L.control.groupedLayers(baseMaps,overlayMaps,layerOptions).addTo(map);
     map.on('layeradd', function(event, layername) {
         var layer = event.layer;
         //console.log("layeradd", layer.name, event);
@@ -176,11 +213,14 @@
         }
         
         if (layer.name) {
-            console.log("layeradd", event, layer.name);
+            console.log("layer selected:", layer.name);
+            //layerswitcher.removeOtherOverlays(layer.name);
         }
     })
     
     map.on('overlayadd', function(event) {
+        //console.log('overlayadd', event.layer);
+        //layerswitcher.removeOtherOverlays();
         activeLayer = event.layer;
     })
     
@@ -188,5 +228,11 @@
         console.log('layer removed', event.name);
     })
  
+         
+    $('#mapdiv').on('change','input.leaflet-control-layers-selector:checkbox', function() {
+        // console.log("select", this.checked);
+        // if(!this.checked) layerswitcher.removeOverlays();
+    });
+
     </script>
 </html>
