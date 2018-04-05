@@ -80,7 +80,7 @@
         //console.log("highlight", event, layer._leaflet_id, layer._renderer._layers);
         
         if (layer._latlngs) {
-            snakeLine = L.polyline(layer._latlngs, {snakingSpeed: 200});
+            snakeLine = L.polyline(layer._latlngs, {weight: 6, snakingSpeed: 200});
             snakeLine.addTo(map).snakeIn();
         }
 
