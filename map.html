@@ -30,7 +30,8 @@
 
     var basemap = L.tileLayer('https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png', {
         detectRetina: true,
-        maxZoom: 18,
+        maxZoom: 24,
+        maxNativeZoom: 19,
         minZoom: 11
     });
 
@@ -45,12 +46,12 @@
         } 
     }
 
-    function showPosition(position) {						
+    function showPosition(position) {
         marker = new L.Marker([position.coords.latitude, position.coords.longitude], {bounceOnAdd: false}).addTo(map);						 
         var popup = L.popup()
         .setLatLng([position.coords.latitude, position.coords.longitude]) 
         .setContent('You are here!')
-        .openOn(map);					
+        .openOn(map);
     }
     
     var defaultStyle = {
@@ -67,8 +68,8 @@
         weight: 6,
         opacity: 0.6,
         fillOpacity: 0.65,
-        fillColor: 'green',
-        dashArray: '30, 10, 15, 10, 5, 10'
+        fillColor: 'green'
+        //dashArray: '30, 10, 15, 10, 5, 10'
     }; 
     
     function zoomToFeature(event) {
