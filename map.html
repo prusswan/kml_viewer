@@ -242,7 +242,11 @@
             // set dynamic content to the popup
             // https://github.com/Leaflet/Leaflet/issues/947
             layer.bindPopup(function() {
-                var result = '<h1>Sequence ' + findLayerSequence(layer) + '</h1><p>layer_id: '+ layer._leaflet_id +'</p><p>length: '+layer._latlngs.length+'</p>';
+                var pointCount = layer._latlngs.length;
+                var result = '<h1>Sequence ' + findLayerSequence(layer) + '</h1><h3>layer_id: '+ layer._leaflet_id + '</h3><h3>length: '+layer._latlngs.length+
+                '</h3><h3>Start:' + layer._latlngs[0] + 
+                '</h3><h3>End:' + layer._latlngs[pointCount-1] + 
+                '</h3>';
                 return result;
             });
         }
