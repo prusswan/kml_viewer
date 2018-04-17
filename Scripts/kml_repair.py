@@ -1,6 +1,15 @@
 import fastkml
 import lxml
 
+from fastkml.kml import KML
+from shapely.geometry import LineString, MultiLineString, mapping, shape
+
+try:
+    import arcpy
+except:
+    pass
+
+    
 # system modules, no need to install
 import os
 import sys
@@ -11,16 +20,10 @@ import csv
 import json
 from math import radians, cos, sin, asin, sqrt
 
-from fastkml.kml import KML
-from shapely.geometry import LineString, MultiLineString, mapping, shape
-
-try:
-    import arcpy
-except:
-    pass
 
 # read KML
 def read_kml(path='ss.kml'):
+    """Function for reading and parsing KML file into object"""
     kml = KML()
     kml.from_string(open(path).read())
     points = dict()
@@ -49,11 +52,13 @@ def read_kml(path='ss.kml'):
 
 
 def is_sublist(a,b):
+    """helper function to check if one list is sublist of the other"""
     dir1 = any(a[i:i + len(b)] == b for i in range(len(a) - len(b) + 1))
     dir2 = any(a[i:i + len(b)] == reversed(b) for i in range(len(a) - len(b) + 1))
     return dir1 or dir2
 
 def join_with_overlap(a, b, offset=None):
+    """helper function to join two lines while accounting for overlap"""
     if offset:
         max_offset = offset
     else:
@@ -88,6 +93,7 @@ def join_with_overlap(a, b, offset=None):
     return False
     
 def join_lines(line1, line2):
+    """helper function to join two lines"""
     # print len(line1.coords), len(line2.coords)
     if len(line1.coords) == 0:
         return line2, 0
@@ -128,18 +134,22 @@ def join_lines(line1, line2):
         print common_points #, longer, shorter
     return False, len(common_points)
 
+
 def arcpy_print(msg):
+    """Function to print messages through ArcGIS"""
     try:
         arcpy.AddMessage(msg)
     except:
         pass
         
 def check_kml(pathname, targetPath=None, knownData=None):
+    """Main function for checking KML file and attempting repair"""
     kml, lines_hash = read_kml(pathname)
     filename = os.path.basename(pathname)
     lines = lines_hash[filename]
     srv_no = filename[:-4]
 
+    # set targetPath if not provided
     if targetPath is None or len(targetPath) == 0:
         fixed_path = os.path.dirname(pathname) + '\\fixed\\'
         if not os.path.exists(fixed_path):

@@ -6,6 +6,7 @@ inputPath = arcpy.GetParameterAsText(0)
 targetPath = arcpy.GetParameterAsText(1)
 
 def execute(source, target):
+    # force ArcGIS to reload the module on every execution of the script
     reload(kml_repair)
     check_kml(source, target)
 
