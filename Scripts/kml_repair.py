@@ -201,7 +201,8 @@ def check_kml(pathname, targetPath=None, knownData=None):
         
     if state == 0:
         print srv_no, "fixed!"
-        arcpy_print(srv_no + " is fixed! Writing to: {0}".format(targetPath));
+        arcpy_print("Joined {0} segments".format(len(lines)))
+        arcpy_print(srv_no + " is fixed! Writing to: {0}".format(targetPath))
 
         kml._features[0]._features[0].geometry = current_line
 
