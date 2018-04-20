@@ -1,11 +1,8 @@
-import fastkml
-import lxml
-
 from fastkml.kml import KML
 from shapely.geometry import LineString, MultiLineString, mapping, shape
 
 try:
-    import arcpy
+    from arcpy import AddMessage
 except:
     pass
 
@@ -93,7 +90,7 @@ def join_with_overlap(a, b, offset=None):
     return False
     
 def join_lines(line1, line2):
-    """helper function to join two lines"""
+    """helper function to join two lines with common endpoints"""
     # print len(line1.coords), len(line2.coords)
     if len(line1.coords) == 0:
         return line2, 0
@@ -138,7 +135,7 @@ def join_lines(line1, line2):
 def arcpy_print(msg):
     """Function to print messages through ArcGIS"""
     try:
-        arcpy.AddMessage(msg)
+        AddMessage(msg)
     except:
         pass
         
